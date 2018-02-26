@@ -2,7 +2,7 @@ class ImportJob < ApplicationRecord
   include AASM
 
   # State machine
-  aasm do
+  aasm column: :state do
     state :new, initial: true
     state :running, :done, :failed
 
