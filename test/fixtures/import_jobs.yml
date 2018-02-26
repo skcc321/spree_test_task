@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  input_file: MyString
+  errors_file: MyString
+  state: MyString
+  jid: MyString
+  type: 
+
+two:
+  input_file: MyString
+  errors_file: MyString
+  state: MyString
+  jid: MyString
+  type: 
