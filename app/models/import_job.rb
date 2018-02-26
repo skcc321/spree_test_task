@@ -19,9 +19,11 @@ class ImportJob < ApplicationRecord
     end
   end
 
-  # Uploaders
+  # Files
   mount_uploader :input_file, DocumentUploader
   mount_uploader :errors_file, DocumentUploader
+
+  validates :input_file, presence: true
 
   # Template
   def import_processor_klass
