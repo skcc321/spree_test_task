@@ -1,0 +1,30 @@
+<%= form_for @product_import_jobs.new, url: [:admin, :create, :product_import_job] do |f| %>
+  <%= f.file_field :input_file %>
+  <%= f.submit :import %>
+<% end %>
+
+<table class='table'>
+  <thead>
+    <tr>
+      <th>State</th>
+      <th>Created</th>
+      <th>OriginalFile</th>
+      <th>ErrorsFile</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <%- @product_import_jobs.each do |product_import_job| %>
+      <tr>
+        <td><%= product_import_job.state %></td>
+        <td><%= product_import_job.created_at %></td>
+        <td><%= link_to 'original_file', admin_product_import_job_original_file_path(product_import_job), class: 'btn btn-default' %></td>
+        <td>
+          <% if product_import_job.errors_file.present? %>
+            <%= link_to 'errors_file', admin_product_import_job_errors_file_path(product_import_job), class: 'btn btn-default' %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

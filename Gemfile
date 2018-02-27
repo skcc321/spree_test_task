@@ -35,9 +35,20 @@ gem 'spree', '~> 3.4.0'
 gem 'spree_auth_devise', '~> 3.3'
 gem 'spree_gateway', '~> 3.3'
 
+gem 'aasm'
+gem 'sidekiq'
+gem 'carrierwave'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'factory_bot_rails'
+  gem 'rspec-rails', '~> 3.7'
+  gem 'pry-rails', :group => :development
+end
+
+group :test do
+  gem 'database_cleaner'
 end
 
 group :development do

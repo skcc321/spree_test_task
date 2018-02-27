@@ -1,0 +1,2 @@
+class BaseLineProcessor
+end

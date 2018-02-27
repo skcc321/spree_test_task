@@ -10,3 +10,12 @@ Rails.application.routes.draw do
   mount Spree::Core::Engine, at: '/'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
+
+Spree::Core::Engine.add_routes do
+  namespace :admin do
+    get "/product_import_jobs", to: "product_import_jobs#index"
+    post "/product_import_jobs", as: :create_product_import_job, to:"product_import_jobs#create"
+    get "/product_import_job/:id/original_file", as: :product_import_job_original_file, to:"product_import_jobs#original_file"
+    get "/product_import_job/:id/errors_file", as: :product_import_job_errors_file, to:"product_import_jobs#errors_file"
+  end
+end
