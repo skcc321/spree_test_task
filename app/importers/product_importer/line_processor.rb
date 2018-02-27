@@ -1,5 +1,6 @@
 class ProductImporter::LineProcessor < BaseLineProcessor
-  attr_reader :line
+  attr_reader :line,
+    :errors
 
   NAME = 'name'.freeze
   DESCRIPTION = 'description'.freeze
@@ -11,6 +12,7 @@ class ProductImporter::LineProcessor < BaseLineProcessor
 
   def initialize(line)
     @line = line
+    @errors = []
   end
 
   def self.headers
@@ -28,7 +30,25 @@ class ProductImporter::LineProcessor < BaseLineProcessor
 
   def perform
     # save records to DB
-    line[NAME]
-    line[DESCRIPTION]
+    return true if line.values.all?(&:blank?)
+
+    product = Spree::Product.new(
+      name: line[NAME],
+      description: line[DESCRIPTION],
+      available_on: line[AVAILABILITY_DATE],
+      slug: line[SLUG],
+      price: line[PRICE],
+      shipping_category: Spree::ShippingCategory.take
+    )
+
+    begin
+      product.save || add_error(product.errors.messages) && false
+    rescue StandardError => e
+      add_error(e.message) && false
+    end
+  end
+
+  def add_error(error)
+    @errors << error
   end
 end

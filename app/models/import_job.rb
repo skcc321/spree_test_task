@@ -11,11 +11,11 @@ class ImportJob < ApplicationRecord
     end
 
     event :finish do
-      transitions running: :done
+      transitions from: :running, to: :done
     end
 
     event :fail do
-      transitions running: :failed
+      transitions from: :running, to: :failed
     end
   end
 
@@ -31,24 +31,25 @@ class ImportJob < ApplicationRecord
   end
 
   def perform
-    self.running!
+    self.run!
 
-    import_processor = import_processor_klass.new(input_file)
-    import_processor.perform
+    import_processor = import_processor_klass.new(input_file.current_path)
 
-    if import_processor.success?
+    if import_processor.perform
       self.finish!
 
       return true
     else
-      self.errors_file = import_processor.errors_file
-      self.fail!
+      import_processor.errors_file do |f|
+        self.errors_file = f
+        self.fail!
+      end
 
       return false
     end
   end
 
   def perform_async
-    ImportWorker.perform_async(self.id)
+    ::ImportingJob.perform_later(self.id)
   end
 end

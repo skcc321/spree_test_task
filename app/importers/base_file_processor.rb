@@ -18,7 +18,12 @@ class BaseFileProcessor
 
   def perform
     # select import strategy
-    import_strategy = import_strategy_klass.new(input_file)
+    if import_strategy_klass.present?
+      import_strategy = import_strategy_klass.new(input_file)
+    else
+      set_status(WRONG_EXT_STATUS)
+      return false
+    end
 
     # headers mismatch
     unless line_processor_klass.headers == import_strategy.headers
@@ -27,12 +32,16 @@ class BaseFileProcessor
     end
 
     # go over lines
-    import_strategy.extract_data do |original_row, parced_row|
+    import_strategy.extract_data do |row_number, original_row, parced_row|
       line_processor = line_processor_klass.new(parced_row)
 
       # line is invalid
       unless line_processor.perform
-        add_error_line(original_row)
+        add_error_line({
+          row_number: row_number,
+          line: original_row,
+          errors: line_processor.errors
+        })
       end
     end
 
@@ -51,13 +60,15 @@ class BaseFileProcessor
   def import_strategy_klass
     case File.extname(input_file)
     when CSV_EXT then ImportStrategies::CsvImportStrategy
-    else
-      raise('unsupported extention')
     end
   end
 
   def add_error_line(row)
     @error_rows << row
+  end
+
+  def errors_file(&block)
+    import_strategy_klass.new(input_file).make_error_file(error_rows, &block)
   end
 
   def set_status(state)

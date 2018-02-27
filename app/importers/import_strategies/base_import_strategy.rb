@@ -8,4 +8,8 @@ class ImportStrategies::BaseImport_strategy
   def extract_data
     raise(NotImplementedError)
   end
+
+  def make_error_file(errors_data)
+    raise(NotImplementedError)
+  end
 end
